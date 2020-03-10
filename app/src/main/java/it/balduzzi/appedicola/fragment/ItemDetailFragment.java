@@ -1,4 +1,4 @@
-package it.balduzzi.appedicola;
+package it.balduzzi.appedicola.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -12,6 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import it.balduzzi.appedicola.R;
+import it.balduzzi.appedicola.activity.ItemDetailActivity;
+import it.balduzzi.appedicola.activity.ItemListActivity;
 import it.balduzzi.appedicola.dummy.DummyContent;
 
 /**
@@ -31,6 +34,8 @@ public class ItemDetailFragment extends Fragment {
      * The dummy content this fragment is presenting.
      */
     private DummyContent.DummyItem mItem;
+
+
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the

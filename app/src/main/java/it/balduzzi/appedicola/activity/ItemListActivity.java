@@ -1,25 +1,29 @@
-package it.balduzzi.appedicola;
+package it.balduzzi.appedicola.activity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import it.balduzzi.appedicola.dummy.DummyContent;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
+
+import it.balduzzi.DA.VolleyRest;
+import it.balduzzi.appedicola.R;
+import it.balduzzi.appedicola.dummy.DummyContent;
+import it.balduzzi.appedicola.fragment.ItemDetailFragment;
 
 /**
  * An activity representing a list of Items. This activity
@@ -41,6 +45,13 @@ public class ItemListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
+
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        VolleyRest volley = new VolleyRest();
+
+        volley.GetPublications(queue);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
