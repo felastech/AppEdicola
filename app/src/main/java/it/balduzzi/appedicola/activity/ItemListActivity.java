@@ -17,6 +17,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import it.balduzzi.Model.OutputPublications;
@@ -46,9 +47,7 @@ public class ItemListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
-
-        getPublications();
-
+        
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
@@ -69,17 +68,17 @@ public class ItemListActivity extends AppCompatActivity {
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
-
-        View recyclerView = findViewById(R.id.item_list);
-        assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        getPublications();
+        //View recyclerView = findViewById(R.id.item_list);
+        //assert recyclerView != null;
+        //setupRecyclerView((RecyclerView) recyclerView);
     }
 
-    private void getPublications() {
+    private OutputPublications getPublications() {
 
         final OutputPublications[] publication = new OutputPublications[1];
 
-        NetworkManager.getInstance().requestGet("publications", new ListenerResponse()
+        NetworkManager.getInstance(this).requestGet("publications", new ListenerResponse()
         {
             @Override
             public void getResult(String result)
@@ -88,6 +87,9 @@ public class ItemListActivity extends AppCompatActivity {
                 {
                     Gson gson = new Gson();
                     publication[0] = gson.fromJson(result, OutputPublications.class);
+                    View recyclerView = findViewById(R.id.item_list);
+                    assert recyclerView != null;
+                    setupRecyclerView((RecyclerView) recyclerView,publication[0]);
                 }
             }
 
@@ -97,10 +99,20 @@ public class ItemListActivity extends AppCompatActivity {
               //Errore
             }
         });
+
+        return publication[0];
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, mTwoPane));
+    private void setupRecyclerView(@NonNull RecyclerView recyclerView, OutputPublications pub) {
+
+
+        List<DummyContent.DummyItem> ITEMS = new ArrayList<DummyContent.DummyItem>();
+
+        DummyContent.DummyItem item = new DummyContent.DummyItem(pub.getMethod(),pub.getData().getItemsType(),"test");
+        ITEMS.add(item);
+
+
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, ITEMS, mTwoPane));
     }
 
     public static class SimpleItemRecyclerViewAdapter
