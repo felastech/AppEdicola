@@ -13,14 +13,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
 
 import java.util.List;
 
-import it.balduzzi.DA.VolleyRest;
+import it.balduzzi.Model.OutputPublications;
+import it.balduzzi.ServiceAccess.ListenerResponse;
+import it.balduzzi.ServiceAccess.NetworkManager;
 import it.balduzzi.appedicola.R;
 import it.balduzzi.appedicola.dummy.DummyContent;
 import it.balduzzi.appedicola.fragment.ItemDetailFragment;
@@ -46,12 +47,7 @@ public class ItemListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
 
-
-        RequestQueue queue = Volley.newRequestQueue(this);
-
-        VolleyRest volley = new VolleyRest();
-
-        volley.GetPublications(queue);
+        getPublications();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -77,6 +73,30 @@ public class ItemListActivity extends AppCompatActivity {
         View recyclerView = findViewById(R.id.item_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
+    }
+
+    private void getPublications() {
+
+        final OutputPublications[] publication = new OutputPublications[1];
+
+        NetworkManager.getInstance().requestGet("publications", new ListenerResponse()
+        {
+            @Override
+            public void getResult(String result)
+            {
+                if (!result.isEmpty())
+                {
+                    Gson gson = new Gson();
+                    publication[0] = gson.fromJson(result, OutputPublications.class);
+                }
+            }
+
+            @Override
+            public void getResult(Boolean result)
+            {
+              //Errore
+            }
+        });
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
