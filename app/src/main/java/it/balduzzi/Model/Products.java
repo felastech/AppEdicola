@@ -1,8 +1,11 @@
 package it.balduzzi.Model;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Products {
+import java.io.Serializable;
+
+public class Products implements Serializable {
 
     @SerializedName("total")
     @Expose

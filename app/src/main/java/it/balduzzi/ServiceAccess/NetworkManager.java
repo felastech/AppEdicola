@@ -2,13 +2,13 @@ package it.balduzzi.ServiceAccess;
 
 import android.content.Context;
 import android.util.Log;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,26 +54,16 @@ public class NetworkManager {
         String url = prefixURL + api;
 
         StringRequest request = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>()
-                {
-                    @Override
-                    public void onResponse(String response)
-                    {
-                        Log.d(TAG + ": ", "Response : " + response.toString());
-                        if(null != response.toString())
-                            listenerResponse.getResult(response.toString());
-                    }
+                response -> {
+                    Log.d(TAG + ": ", "Response : " + response.toString());
+                    if(null != response.toString())
+                        listenerResponse.getResult(response.toString());
                 },
-                new Response.ErrorListener()
-                {
-                    @Override
-                    public void onErrorResponse(VolleyError error)
+                error -> {
+                    if (null != error.networkResponse)
                     {
-                        if (null != error.networkResponse)
-                        {
-                            Log.d(TAG + ": ", "Error Response: " + error.networkResponse.statusCode);
-                            listenerResponse.getResult(false);
-                        }
+                        Log.d(TAG + ": ", "Error Response: " + error.networkResponse.statusCode);
+                        listenerResponse.getResult(false);
                     }
                 }){
             @Override
@@ -91,5 +81,36 @@ public class NetworkManager {
 
     private String GetToken() {
         return  TOKEN;
+    }
+
+    public void requestGet(String api, String s, ListenerResponse listenerResponse) {
+
+        String url = prefixURL + api + "/" + s;
+        Log.d(TAG + ": ", "URL : " + url);
+
+        StringRequest request = new StringRequest(Request.Method.GET, url,
+                response -> {
+                    Log.d(TAG + ": ", "Response : " + response.toString());
+                    if(null != response.toString())
+                        listenerResponse.getResult(response.toString());
+                },
+                error -> {
+                    if (null != error.networkResponse)
+                    {
+                        Log.d(TAG + ": ", "Error Response: " + error.networkResponse.statusCode);
+                        listenerResponse.getResult(false);
+                    }
+                }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers =  new HashMap<String, String>();
+                String credentials = GetToken();
+                String encoded = "Bearer " + credentials;
+                headers.put("Authorization", encoded);
+                return headers;
+            }
+        };
+
+        requestQueue.add(request);
     }
 }

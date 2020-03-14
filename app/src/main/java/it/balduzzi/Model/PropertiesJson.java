@@ -3,7 +3,9 @@ package it.balduzzi.Model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class PropertiesJson {
+import java.io.Serializable;
+
+public class PropertiesJson implements Serializable {
 
     @SerializedName("stores")
     @Expose

@@ -2,6 +2,7 @@ package it.balduzzi.appedicola.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,21 +12,32 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import it.balduzzi.BusinessLogic.DividerItemDecoration;
+import it.balduzzi.BusinessLogic.RecyclerTouchListener;
+import it.balduzzi.BusinessLogic.SportAdapter;
+import it.balduzzi.Model.Item;
 import it.balduzzi.Model.OutputPublications;
 import it.balduzzi.ServiceAccess.ListenerResponse;
 import it.balduzzi.ServiceAccess.NetworkManager;
 import it.balduzzi.appedicola.R;
 import it.balduzzi.appedicola.dummy.DummyContent;
 import it.balduzzi.appedicola.fragment.ItemDetailFragment;
+
 
 /**
  * An activity representing a list of Items. This activity
@@ -35,8 +47,12 @@ import it.balduzzi.appedicola.fragment.ItemDetailFragment;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class ItemListActivity extends AppCompatActivity {
+public class ItemListActivity extends AppCompatActivity implements SportAdapter.Callback {
 
+    @BindView(R.id.item_list)
+    RecyclerView mRecyclerView;
+    SportAdapter mSportAdapter;
+    LinearLayoutManager mLayoutManager;
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
@@ -47,7 +63,7 @@ public class ItemListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
-        
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
@@ -68,10 +84,35 @@ public class ItemListActivity extends AppCompatActivity {
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
-        getPublications();
-        //View recyclerView = findViewById(R.id.item_list);
-        //assert recyclerView != null;
-        //setupRecyclerView((RecyclerView) recyclerView);
+        
+        ButterKnife.bind(this);
+        setUp();
+    }
+
+    private void setUp() {
+
+        mLayoutManager = new LinearLayoutManager(this);
+        mLayoutManager.setOrientation(RecyclerView.VERTICAL);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        Drawable dividerDrawable = ContextCompat.getDrawable(this, R.drawable.divider_drawable);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(dividerDrawable));
+        mSportAdapter = new SportAdapter(new ArrayList<>(), this,mTwoPane);
+
+
+
+        prepareDemoContent();
+
+    }
+
+    private void prepareDemoContent() {
+
+         getPublications();
+    }
+
+    @Override
+    public void onEmptyViewRetryClick() {
+        prepareDemoContent();
     }
 
     private OutputPublications getPublications() {
@@ -87,9 +128,28 @@ public class ItemListActivity extends AppCompatActivity {
                 {
                     Gson gson = new Gson();
                     publication[0] = gson.fromJson(result, OutputPublications.class);
-                    View recyclerView = findViewById(R.id.item_list);
-                    assert recyclerView != null;
-                    setupRecyclerView((RecyclerView) recyclerView,publication[0]);
+                    mSportAdapter.addItems(publication[0].getData().getItems());
+                    mRecyclerView.setAdapter(mSportAdapter);
+                    mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), mRecyclerView, new RecyclerTouchListener.ClickListener() {
+                        @Override
+                        public void onClick(View view, int position) {
+                            Item it = publication[0].getData().getItems().get(position);
+
+
+                            Context context = view.getContext();
+                            Intent intent = new Intent(context, ItemDetailActivity.class);
+                            intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, it.getPublicationId());
+                            intent.putExtra(ItemDetailFragment.LIST_ITEM, (Serializable) publication[0].getData().getItems());
+                            context.startActivity(intent);
+
+                        }
+
+                        @Override
+                        public void onLongClick(View view, int position) {
+
+                        }
+                    }));
+
                 }
             }
 
@@ -106,13 +166,7 @@ public class ItemListActivity extends AppCompatActivity {
     private void setupRecyclerView(@NonNull RecyclerView recyclerView, OutputPublications pub) {
 
 
-        List<DummyContent.DummyItem> ITEMS = new ArrayList<DummyContent.DummyItem>();
-
-        DummyContent.DummyItem item = new DummyContent.DummyItem(pub.getMethod(),pub.getData().getItemsType(),"test");
-        ITEMS.add(item);
-
-
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, ITEMS, mTwoPane));
+       // recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, ITEMS, mTwoPane));
     }
 
     public static class SimpleItemRecyclerViewAdapter

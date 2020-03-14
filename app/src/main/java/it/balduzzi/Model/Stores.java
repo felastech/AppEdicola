@@ -3,7 +3,9 @@ package it.balduzzi.Model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Stores {
+import java.io.Serializable;
+
+public class Stores implements Serializable {
 
     @SerializedName("googlePlayDefaultPriceTier")
     @Expose

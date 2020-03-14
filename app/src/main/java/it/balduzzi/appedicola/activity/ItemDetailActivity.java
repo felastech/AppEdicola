@@ -36,25 +36,6 @@ public class ItemDetailActivity extends AppCompatActivity {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,6 +66,8 @@ public class ItemDetailActivity extends AppCompatActivity {
             Bundle arguments = new Bundle();
             arguments.putString(ItemDetailFragment.ARG_ITEM_ID,
                     getIntent().getStringExtra(ItemDetailFragment.ARG_ITEM_ID));
+          arguments.putSerializable(ItemDetailFragment.LIST_ITEM,
+                   getIntent().getSerializableExtra(ItemDetailFragment.LIST_ITEM));
             ItemDetailFragment fragment = new ItemDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()

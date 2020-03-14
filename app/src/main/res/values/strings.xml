@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">AppEdicola</string>
     <string name="title_item_detail">Item Detail</string>
+    <string name="title_placeholder">Title</string>
+    <string name="news_placeholder">News</string>
+    <string name="sports_info_placeholder">Here is some news</string>
+    <string name="empty_screen">We do not have anything\nhere right now. Please Retry</string>
+    <string name="btn_retry">Retry</string>
+
 </resources>

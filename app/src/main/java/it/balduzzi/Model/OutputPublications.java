@@ -1,8 +1,11 @@
 package it.balduzzi.Model;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class OutputPublications {
+import java.io.Serializable;
+
+public class OutputPublications implements Serializable {
     @SerializedName("error")
     @Expose
     private Boolean error;
