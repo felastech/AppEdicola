@@ -40,6 +40,7 @@ public class ItemDetailFragment extends Fragment {
      */
     private Item mItem;
     private List<Item> itemList;
+    private Issue test;
 
 
 
@@ -88,7 +89,9 @@ public class ItemDetailFragment extends Fragment {
                 if (!result.isEmpty())
                 {
                     Gson gson = new Gson();
-                //    object result = gson.fromJson(result, OutputPublications.class);
+                    test = gson.fromJson(result, Issue.class);
+
+          
 
 
                 }
