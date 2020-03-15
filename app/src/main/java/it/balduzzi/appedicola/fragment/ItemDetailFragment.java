@@ -1,19 +1,20 @@
 package it.balduzzi.appedicola.fragment;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.gson.Gson;
 
 import java.util.List;
 
+import butterknife.BindView;
+import it.balduzzi.BusinessLogic.IssueAdapter;
 import it.balduzzi.Model.Item;
 import it.balduzzi.ServiceAccess.ListenerResponse;
 import it.balduzzi.ServiceAccess.NetworkManager;
@@ -42,7 +43,10 @@ public class ItemDetailFragment extends Fragment {
     private List<Item> itemList;
     private Issue test;
 
-
+    @BindView(R.id.item_list)
+    RecyclerView mRecyclerView;
+    IssueAdapter mSportAdapter;
+    LinearLayoutManager mLayoutManager;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -69,13 +73,8 @@ public class ItemDetailFragment extends Fragment {
                 }
             }
 
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-            if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.getPublicationName());
-            }
 
-            setIssue();
+
         }
     }
 
@@ -90,10 +89,8 @@ public class ItemDetailFragment extends Fragment {
                 {
                     Gson gson = new Gson();
                     test = gson.fromJson(result, Issue.class);
-
-          
-
-
+                    mSportAdapter.addItems(test.getData().items);
+                    mRecyclerView.setAdapter(mSportAdapter);
                 }
             }
 
@@ -109,12 +106,19 @@ public class ItemDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.item_detail, container, false);
 
+
+        // 2. set layoutManger
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
         // Show the dummy content as text in a TextView.
-        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.item_detail)).setText(mItem.getPublicationName());
-        }
+        //if (mItem != null) {
+          //  ((TextView) rootView.findViewById(R.id.item_detail)).setText(mItem.getPublicationName());
+       // }
+
+        setIssue();
 
         return rootView;
     }

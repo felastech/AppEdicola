@@ -7,7 +7,6 @@ import java.util.List;
 
 public class ItemIssue {
 
-
     @SerializedName("publicationId")
     @Expose
     private String publicationId;
