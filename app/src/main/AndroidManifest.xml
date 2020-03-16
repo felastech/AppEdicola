@@ -15,7 +15,7 @@
 
 
         <activity
-            android:name=".activity.ItemListActivity"
+            android:name=".activity.PublicationActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -25,13 +25,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.ItemDetailActivity"
+            android:name=".activity.IssueActivity"
             android:label="@string/title_item_detail"
-            android:parentActivityName=".activity.ItemListActivity"
+            android:parentActivityName=".activity.PublicationActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="it.balduzzi.appedicola.activity.ItemListActivity" />
+                android:value="it.balduzzi.appedicola.activity.PublicationActivity" />
         </activity>
     </application>
 
