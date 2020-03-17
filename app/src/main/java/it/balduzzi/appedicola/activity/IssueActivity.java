@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.RequestQueue;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -56,6 +57,20 @@ public class IssueActivity extends AppCompatActivity {
         setUp();
         setIssue();
     }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        RequestQueue requestQueue = NetworkManager.getInstance(this).getRequestQueue();
+        if( requestQueue != null)
+        {
+            requestQueue.cancelAll(TAG);
+        }
+
+        Log.d(TAG + ": ", "OnStop ");
+    }
+
 
     private void setUp() {
 

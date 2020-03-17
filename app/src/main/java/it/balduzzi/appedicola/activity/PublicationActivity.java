@@ -5,14 +5,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.volley.RequestQueue;
 import com.google.gson.Gson;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import it.balduzzi.appedicola.R;
@@ -44,6 +49,19 @@ public class PublicationActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setUp();
         getPublications();
+    }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        RequestQueue requestQueue = NetworkManager.getInstance(this).getRequestQueue();
+        if( requestQueue != null)
+        {
+            requestQueue.cancelAll(TAG);
+        }
+
+        Log.d(TAG + ": ", "OnStop ");
     }
 
     private void setUp() {

@@ -89,4 +89,8 @@ public class NetworkManager {
 
         requestQueue.add(request);
     }
+
+    public RequestQueue getRequestQueue() {
+        return requestQueue;
+    }
 }
