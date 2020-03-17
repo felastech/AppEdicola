@@ -1,58 +1,35 @@
 package it.balduzzi.businesslogic.adapter;
 
-import android.content.Intent;
-import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import it.balduzzi.appedicola.R;
-import it.balduzzi.appedicola.activity.PublicationActivity;
 import it.balduzzi.model.publication.Item;
 
 public class PublicationAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
-    private static final String TAG = "PublicationAdapter";
     public static final int VIEW_TYPE_EMPTY = 0;
     public static final int VIEW_TYPE_NORMAL = 1;
-    private Callback mCallback;
-    private final PublicationActivity mParentActivity;
     private List<Item> mPublicationList;
 
 
-    public PublicationAdapter(List<Item> publicationList, PublicationActivity parent) {
+    public PublicationAdapter(List<Item> publicationList) {
         mPublicationList = publicationList;
-        mParentActivity = parent;
-    }
-    public void setCallback(Callback callback) {
-        mCallback = callback;
     }
 
     @Override
     public void onBindViewHolder(BaseViewHolder holder, int position) {
         holder.onBind(position);
-        //  holder.itemView.setOnClickListener(mOnClickListener);
     }
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        switch (viewType) {
-            case VIEW_TYPE_NORMAL:
-                return new ViewHolder(
-                        LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false));
-            case VIEW_TYPE_EMPTY:
-            default:
-                return new EmptyViewHolder(
-                        LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.item_empty_view, parent, false));
-        }
+
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false));
     }
     @Override
     public int getItemViewType(int position) {
@@ -70,13 +47,11 @@ public class PublicationAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             return 1;
         }
     }
-    public void addItems(List<Item> sportList) {
-        mPublicationList.addAll(sportList);
+    public void addItems(List<Item> publicationList) {
+        mPublicationList.addAll(publicationList);
         notifyDataSetChanged();
     }
-    public interface Callback {
-        void onEmptyViewRetryClick();
-    }
+
     public class ViewHolder extends BaseViewHolder {
         @BindView(R.id.title)
         TextView titleTextView;
@@ -94,34 +69,6 @@ public class PublicationAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             if (mPublication.getPublicationName() != null) {
                 titleTextView.setText(mPublication.getPublicationName());
             }
-
-            itemView.setOnClickListener(v -> {
-                if (mPublication.getProjectId() != null) {
-                    try {
-                        Intent intent = new Intent();
-                        intent.setAction(Intent.ACTION_VIEW);
-                        intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                        intent.setData(Uri.parse(mPublication.getProjectId()));
-                        itemView.getContext().startActivity(intent);
-                    } catch (Exception e) {
-                        Log.e(TAG, "onClick: Image url is not correct");
-                    }
-                }
-            });
-        }
-    }
-    public class EmptyViewHolder extends BaseViewHolder {
-        @BindView(R.id.tv_message)
-        TextView messageTextView;
-        @BindView(R.id.buttonRetry)
-        TextView buttonRetry;
-        EmptyViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-            buttonRetry.setOnClickListener(v -> mCallback.onEmptyViewRetryClick());
-        }
-        @Override
-        protected void clear() {
         }
     }
 }

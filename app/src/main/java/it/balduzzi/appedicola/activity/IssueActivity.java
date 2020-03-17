@@ -1,14 +1,10 @@
 package it.balduzzi.appedicola.activity;
 
-import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.util.Log;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NavUtils;
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,7 +17,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import it.balduzzi.appedicola.R;
-import it.balduzzi.businesslogic.adapter.DividerItemDecoration;
 import it.balduzzi.businesslogic.adapter.IssueAdapter;
 import it.balduzzi.model.issue.Issue;
 import it.balduzzi.model.publication.Item;
@@ -31,29 +26,24 @@ import it.balduzzi.serviceaccess.NetworkManager;
 
 public class IssueActivity extends AppCompatActivity {
 
-    private List<Item> itemList;
     private Item mItem;
-    private Issue test;
+    private Issue mIssue;
     @BindView(R.id.item_list)
     RecyclerView mRecyclerView;
-    IssueAdapter mSportAdapter;
-    LinearLayoutManager mLayoutManager;
-    private  String ARG_ITEM_ID = "ARG_ITEM_ID";
-    private String LIST_ITEM = "LIST_ITEM";
+    private IssueAdapter mIssueAdapter;
+    private static final String TAG = "IssueActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_detail);
 
-        // Show the Up button in the action bar.
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitle(getTitle());
 
-        itemList = (List<Item>)  getIntent().getSerializableExtra(LIST_ITEM);
-        String result = getIntent().getStringExtra(ARG_ITEM_ID);
+        List<Item> itemList = (List<Item>) getIntent().getSerializableExtra(getResources().getString(R.string.extraListElements));
+        String result = getIntent().getStringExtra(getResources().getString(R.string.extraItemId));
         for(Item i : itemList)
         {
             if(i.getPublicationId().equals(result))
@@ -63,21 +53,24 @@ public class IssueActivity extends AppCompatActivity {
         }
 
         ButterKnife.bind(this);
+        setUp();
+        setIssue();
+    }
 
-        mLayoutManager = new LinearLayoutManager(this);
+    private void setUp() {
+
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         mLayoutManager.setOrientation(RecyclerView.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        Drawable dividerDrawable = ContextCompat.getDrawable(this, R.drawable.divider_drawable);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(dividerDrawable));
-        mSportAdapter = new IssueAdapter(new ArrayList<>(), this);
-
-        setIssue();
+        mIssueAdapter = new IssueAdapter(new ArrayList<>());
     }
 
     private void setIssue() {
 
-        NetworkManager.getInstance(this).requestGet("issues", mItem.getPublicationId(),new ListenerResponse()
+        Log.d(TAG + ": ", "Get issue ");
+
+        NetworkManager.getInstance(this).requestGet(getResources().getString(R.string.apiIssue), mItem.getPublicationId(),new ListenerResponse()
         {
             @Override
             public void getResult(String result)
@@ -85,34 +78,17 @@ public class IssueActivity extends AppCompatActivity {
                 if (!result.isEmpty())
                 {
                     Gson gson = new Gson();
-                    test = gson.fromJson(result, Issue.class);
-                    mSportAdapter.addItems(test.getData().getItems());
-                    mRecyclerView.setAdapter(mSportAdapter);
+                    mIssue = gson.fromJson(result, Issue.class);
+                    mIssueAdapter.addItems(mIssue.getData().getItems());
+                    mRecyclerView.setAdapter(mIssueAdapter);
                 }
             }
 
             @Override
             public void getResult(Boolean result)
             {
-                //Errore
+                Log.d(TAG + ": ", "Error Response: " + result);
             }
         });
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. Use NavUtils to allow users
-            // to navigate up one level in the application structure. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
-            NavUtils.navigateUpTo(this, new Intent(this, PublicationActivity.class));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 }

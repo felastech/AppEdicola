@@ -11,26 +11,18 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import it.balduzzi.appedicola.activity.IssueActivity;
-import it.balduzzi.model.issue.ItemIssue;
 import it.balduzzi.appedicola.R;
+import it.balduzzi.model.issue.ItemIssue;
 
 public class IssueAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
-    private static final String TAG = "IssueAdapter";
     public static final int VIEW_TYPE_EMPTY = 0;
     public static final int VIEW_TYPE_NORMAL = 1;
-    private Callback mCallback;
-    private final IssueActivity mParentActivity;
     private List<ItemIssue> mIssueList;
 
 
-    public IssueAdapter(List<ItemIssue> issueList, IssueActivity parent) {
+    public IssueAdapter(List<ItemIssue> issueList) {
         mIssueList = issueList;
-        mParentActivity = parent;
-    }
-    public void setCallback(Callback callback) {
-        mCallback = callback;
     }
 
     @Override
@@ -39,16 +31,9 @@ public class IssueAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     }
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        switch (viewType) {
-            case VIEW_TYPE_NORMAL:
-                return new ViewHolder(
-                        LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_issue, parent, false));
-            case VIEW_TYPE_EMPTY:
-            default:
-                return new EmptyViewHolder(
-                        LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.item_empty_view, parent, false));
-        }
+
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_issue, parent, false));
+
     }
     @Override
     public int getItemViewType(int position) {
@@ -66,13 +51,11 @@ public class IssueAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             return 1;
         }
     }
-    public void addItems(List<ItemIssue> sportList) {
-        mIssueList.addAll(sportList);
+    public void addItems(List<ItemIssue> issueList) {
+        mIssueList.addAll(issueList);
         notifyDataSetChanged();
     }
-    public interface Callback {
-        void onEmptyViewRetryClick();
-    }
+
     public class ViewHolder extends BaseViewHolder {
         @BindView(R.id.thumbnail)
         ImageView coverImageView;
@@ -88,7 +71,6 @@ public class IssueAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         protected void clear() {
             coverImageView.setImageDrawable(null);
             titleTextView.setText("");
-
         }
         public void onBind(int position) {
             super.onBind(position);
@@ -105,23 +87,8 @@ public class IssueAdapter extends RecyclerView.Adapter<BaseViewHolder> {
                 titleTextView.setText(mIssue.getIssueName());
             }
             if(mIssue.isForSale()){
-                btnAction.setText("Acquista");
+                btnAction.setText(itemView.getResources().getString(R.string.btnActionAcquista));
             }
-        }
-    }
-
-    public class EmptyViewHolder extends BaseViewHolder {
-        @BindView(R.id.tv_message)
-        TextView messageTextView;
-        @BindView(R.id.buttonRetry)
-        TextView buttonRetry;
-        EmptyViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-            buttonRetry.setOnClickListener(v -> mCallback.onEmptyViewRetryClick());
-        }
-        @Override
-        protected void clear() {
         }
     }
 }
